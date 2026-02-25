@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>1 New Message</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-left:#e9e2dc;
+      --text:#111;
+      --accent:#2fa79a;
+      --right:#0b0b0c;
+      --right2:#060607;
+
+      --container-pad: clamp(18px, 3.2vw, 56px);
+      --nav-gap: clamp(14px, 2.2vw, 34px);
+      --h1: clamp(44px, 5.8vw, 88px);
+      --h1-line: 0.95;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:#000;
+    }
+
+    /* Split layout */
+    .split{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .left{
+      background:var(--bg-left);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: var(--container-pad);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .left-inner{
+      width:min(560px, 100%);
+      text-align:center;
+    }
+
+    /* 404 title in the top-left like a brand */
+    .brand{
+      position:absolute;
+      top: 22px;
+      left: var(--container-pad);
+      font-weight: 700;
+      letter-spacing: .14em;
+      font-size: 26px;
+      opacity:.9;
+      user-select:none;
+    }
+
+    h1{
+      margin: 0 0 18px;
+      font-size: var(--h1);
+      line-height: var(--h1-line);
+      letter-spacing: -0.03em;
+      font-weight: 800;
+      color:#101010;
+    }
+
+    .sub{
+      margin: 0 0 26px;
+      font-size: clamp(18px, 1.6vw, 26px);
+      color: #1f1f1f;
+      opacity:.9;
+      font-weight: 500;
+    }
+
+    .cta{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      padding: 18px 34px;
+      border-radius: 999px;
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      font-size: 14px;
+      cursor:pointer;
+      box-shadow: 0 12px 30px rgba(47,167,154,.26);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+    .cta:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 18px 40px rgba(47,167,154,.32);
+      filter: brightness(1.02);
+    }
+    .cta:active{
+      transform: translateY(0px) scale(.99);
+    }
+
+    /* Right side */
+    .right{
+      background: radial-gradient(1200px 700px at 20% 20%, var(--right) 0%, var(--right2) 70%, #000 100%);
+      position:relative;
+      overflow:hidden;
+      padding: var(--container-pad);
+      color:#fff;
+    }
+
+    /* NEW: top bar that starts left, not right */
+    .topbar{
+      position:absolute;
+      top: 22px;
+      left: var(--container-pad);
+      right: var(--container-pad);
+      display:flex;
+      align-items:center;
+      justify-content:flex-start; /* left aligned */
+      gap: var(--nav-gap);
+      z-index: 3;
+      user-select:none;
+    }
+
+    .topbar a{
+      color: rgba(255,255,255,.88);
+      text-decoration:none;
+      font-weight: 600;
+      letter-spacing: .14em;
+      font-size: 14px;
+      text-transform: uppercase;
+      padding: 8px 0;
+      position:relative;
+      transition: opacity .2s ease;
+      white-space:nowrap;
+    }
+    .topbar a:hover{ opacity:1; }
+    .topbar a::after{
+      content:"";
+      position:absolute;
+      left:0; bottom:0;
+      width:0%;
+      height:2px;
+      background: rgba(255,255,255,.65);
+      transition: width .22s ease;
+    }
+    .topbar a:hover::after{ width:100%; }
+
+    /* NEW: keep everything left, and place extra links to the right of "How it Works" */
+    .topbar .links{
+      display:flex;
+      align-items:center;
+      gap: var(--nav-gap);
+    }
+
+    /* Image placeholder area */
+    .media-wrap{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: clamp(22px, 3vw, 70px);
+      pointer-events:none;
+      z-index:1;
+    }
+
+    .media{
+      width:min(78vmin, 720px);
+      height:min(56vmin, 520px);
+      border-radius: 16px;
+      overflow:hidden;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 18px 50px rgba(0,0,0,.55);
+      display:grid;
+      place-items:center;
+      position:relative;
+    }
+
+    /* This is the URL-based image area */
+    .media img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      opacity: .95;
+    }
+
+    /* If image fails / empty, show placeholder text */
+    .media .fallback{
+      position:absolute;
+      inset:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      padding: 24px;
+      text-align:center;
+      color: rgba(255,255,255,.85);
+      pointer-events:none;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      font-size: 12px;
+      letter-spacing:.12em;
+      text-transform: uppercase;
+    }
+    .code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      opacity:.9;
+      word-break:break-all;
+      max-width: 520px;
+    }
+
+    /* subtle vignette overlay */
+    .right::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(60% 70% at 60% 50%, rgba(255,255,255,0.06), rgba(0,0,0,0.0) 50%),
+        radial-gradient(80% 80% at 40% 55%, rgba(0,0,0,0.0), rgba(0,0,0,0.65) 72%, rgba(0,0,0,0.9) 100%);
+      pointer-events:none;
+      z-index:2;
+    }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index:50;
+    }
+    .modal{
+      width:min(560px, 100%);
+      background: rgba(255,255,255,.96);
+      color:#111;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      position:relative;
+    }
+    .modal h2{
+      margin: 0 0 10px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+    .modal p{
+      margin: 0 0 18px;
+      line-height: 1.55;
+      color:#222;
+    }
+    .modal .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .modal input{
+      flex:1 1 240px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,.12);
+      outline: none;
+      font-size: 15px;
+    }
+    .modal input:focus{
+      border-color: rgba(47,167,154,.6);
+      box-shadow: 0 0 0 4px rgba(47,167,154,.18);
+    }
+    .modal .btn{
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 0;
+      background: var(--accent);
+      color:#fff;
+      font-weight: 700;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .close{
+      position:absolute;
+      top: 12px;
+      right: 14px;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 0;
+      cursor:pointer;
+      background: rgba(0,0,0,.06);
+      color:#111;
+      font-size: 18px;
+      display:grid;
+      place-items:center;
+    }
+
+    /* Mobile */
+    @media (max-width: 900px){
+      .split{ grid-template-columns: 1fr; }
+      .right{ min-height: 52vh; }
+      .brand{ font-size: 22px; }
+      .topbar{
+        position:static;
+        padding: 8px 0 0;
+        flex-wrap:wrap;
+        gap: 12px 18px;
+      }
+      .media-wrap{
+        position:relative;
+        inset:auto;
+        padding: 18px 0 24px;
+        pointer-events:none;
+      }
+      .media{
+        width: 100%;
+        height: min(54vmin, 360px);
+      }
+    }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .cta, .topbar a::after { transition:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="split">
+    <!-- LEFT -->
+    <section class="left" aria-label="Hero Left">
+      <div class="brand">404</div>
+
+      <div class="left-inner">
+        <h1>Top Rated Jobs<br/>Marketplace</h1>
+        <p class="sub">Job Seekers Start Here. No Experience Required!</p>
+
+        <button class="cta" id="applyBtn" type="button" aria-haspopup="dialog" aria-controls="applyModal">
+          Get Job Alerts
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- RIGHT -->
+    <section class="right" aria-label="Hero Right">
+      <!-- NEW: How it Works positioned on the left (after the 404 title on the left panel) -->
+      <div class="topbar" aria-label="Primary navigation">
+        <div class="links">
+          <a href="#how" data-route="how">How it Works</a>
+          <a href="#about" data-route="about">About</a>
+          <a href="#jobs" data-route="jobs">Jobs</a>
+          <a href="#contact" data-route="contact">Contact</a>
+        </div>
+      </div>
+
+      <!-- NEW: URL image placeholder -->
+      <div class="media-wrap" aria-hidden="true">
+        <div class="media">
+          <!-- Put your image URL below -->
+          <img id="rightHeroImg" src="" alt="" />
+          <div class="fallback" id="fallback">
+            <div class="pill">RIGHT SIDE IMAGE</div>
+            <div style="opacity:.85">Set a URL in <strong>IMAGE_URL</strong> (JS) or the <strong>src</strong> attribute.</div>
+            <div class="code" id="urlPreview"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- SIMPLE MODAL -->
+  <div class="modal-backdrop" id="applyModal" role="dialog" aria-modal="true" aria-labelledby="applyTitle">
+    <div class="modal">
+      <button class="close" id="closeModal" aria-label="Close">✕</button>
+      <h2 id="applyTitle">Get Job Alerts</h2>
+      <p>Drop your email and we’ll send job alerts (front-end demo — no data is actually sent).</p>
+      <div class="row">
+        <input id="email" type="email" placeholder="you@example.com" autocomplete="email" />
+        <button class="btn" id="submitEmail" type="button">Send</button>
+      </div>
+      <p id="status" style="margin-top:12px; font-size:14px; color:#2a2a2a;"></p>
+    </div>
+  </div>
+
+  <script>
+    // =========================
+    // 1) RIGHT IMAGE URL PLACEHOLDER
+    // =========================
+    // Put your image URL here:
+    const IMAGE_URL = ""; // e.g. "https://images.unsplash.com/photo-...";
+
+    const img = document.getElementById("rightHeroImg");
+    const fallback = document.getElementById("fallback");
+    const urlPreview = document.getElementById("urlPreview");
+
+    urlPreview.textContent = IMAGE_URL ? `URL: ${IMAGE_URL}` : "URL: (empty)";
+    img.src = IMAGE_URL || "";
+
+    // if image fails or empty, keep placeholder visible
+    const showFallback = () => { fallback.style.display = "flex"; img.style.opacity = "0"; };
+    const hideFallback = () => { fallback.style.display = "none"; img.style.opacity = "1"; };
+
+    if (!IMAGE_URL) showFallback();
+
+    img.addEventListener("load", () => {
+      if (img.naturalWidth > 0) hideFallback();
+      else showFallback();
+    });
+
+    img.addEventListener("error", showFallback);
+
+    // =========================
+    // 2) MODAL LOGIC
+    // =========================
+    const modal = document.getElementById("applyModal");
+    const applyBtn = document.getElementById("applyBtn");
+    const closeBtn = document.getElementById("closeModal");
+    const emailEl = document.getElementById("email");
+    const submitBtn = document.getElementById("submitEmail");
+    const statusEl = document.getElementById("status");
+
+    const openModal = () => {
+      modal.style.display = "flex";
+      statusEl.textContent = "";
+      setTimeout(() => emailEl.focus(), 50);
+    };
+    const closeModal = () => {
+      modal.style.display = "none";
+    };
+
+    applyBtn.addEventListener("click", openModal);
+    closeBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.style.display === "flex") closeModal();
+    });
+
+    // =========================
+    // 3) NAV DEMO BEHAVIOR
+    // =========================
+    document.querySelectorAll(".topbar a").forEach(a => {
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        const route = a.dataset.route || a.getAttribute("href").replace("#", "");
+        if (route === "how") alert("How it Works clicked (demo link)");
+        else alert(`${route.toUpperCase()} clicked (demo link)`);
+      });
+    });
+
+    // Fake submit
+    submitBtn.addEventListener("click", () => {
+      const v = (emailEl.value || "").trim();
+      if (!v || !/^\S+@\S+\.\S+$/.test(v)) {
+        statusEl.textContent = "Please enter a valid email address.";
+        return;
+      }
+      statusEl.textContent = "Thanks! You’re subscribed for alerts.";
+      emailEl.value = "";
+    });
+  </script>
+</body>
+</html>
